@@ -46,6 +46,22 @@ def process():
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/get_locality_geojson')
+def get_locality_geojson():
+    locality_name = request.args.get('name')
+    if not locality_name:
+        return jsonify({"error": "Nom de localité manquant"}), 400
+    
+    try:
+        # Parcourir le GeoJSON pour trouver la localité
+        for feature in geojson_data["features"]:
+            if feature["properties"]["NAME_3"] == locality_name:
+                return jsonify(feature)
+        
+        return jsonify({"error": f"Localité {locality_name} introuvable"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
