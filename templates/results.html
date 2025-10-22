@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Résultats - {{ locality }} | Earth Monitor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/results.css') }}">
+</head>
+<body>
+    <!-- Navigation avec retour -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi bi-arrow-left me-2"></i>
+                <strong>Earth Monitor</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="bi bi-geo-alt me-1"></i>
+                    {{ locality }}
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section avec image de fond spécifique aux résultats -->
+    <section class="results-hero">
+        <div class="results-overlay"></div>
+        <div class="results-background"></div>
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12 text-center text-white">
+                    <h1 class="display-4 fw-bold mb-3">
+                        Analyse Environnementale
+                    </h1>
+                    <h2 class="h3 mb-4 text-primary">{{ locality }}</h2>
+                    <p class="lead">
+                        Résultats de l'analyse NDVI et NDWI • Période: Janvier - Mars 2025
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section KPI -->
+    <section class="kpi-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-icon ndvi-color">
+                            <i class="bi bi-tree-fill"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 class="kpi-value" id="ndviValue">{{ ndvi_mean|round(3) if ndvi_mean else '--' }}</h3>
+                            <p class="kpi-label">NDVI Moyen</p>
+                            <small class="kpi-description">Densité végétale</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-icon ndwi-color">
+                            <i class="bi bi-droplet-fill"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 class="kpi-value" id="ndwiValue">{{ ndwi_mean|round(3) if ndwi_mean else '--' }}</h3>
+                            <p class="kpi-label">NDWI Moyen</p>
+                            <small class="kpi-description">Humidité du sol</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-icon surface-color">
+                            <i class="bi bi-map"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 class="kpi-value">{{ surface_area|round(1) if surface_area else '--' }}</h3>
+                            <p class="kpi-label">Surface (km²)</p>
+                            <small class="kpi-description">Zone d'analyse</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="kpi-card">
+                        <div class="kpi-icon quality-color">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+                        <div class="kpi-content">
+                            <h3 class="kpi-value">{{ data_quality|round(0) if data_quality else '--' }}%</h3>
+                            <p class="kpi-label">Qualité Données</p>
+                            <small class="kpi-description">Couverture nuageuse</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Visualisations -->
+    <section class="visualizations-section py-5 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title">Évolution Temporelle</h2>
+                    <p class="text-muted">Animations montrant les changements des indices au fil du temps</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <!-- NDVI Animation -->
+                <div class="col-lg-6 mb-5">
+                    <div class="visualization-card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <div class="header-icon ndvi-color me-3">
+                                    <i class="bi bi-tree-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">Indice de Végétation (NDVI)</h4>
+                                    <small class="text-muted">Évolution de la couverture végétale</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="gif-container">
+                                <svg id="ndvi-svg" class="mask-svg" width="100%" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
+                                <img id="ndviGif" src="{{ ndvi_gif }}?t={{ timestamp }}" alt="Animation NDVI" class="masked-gif">
+                                <div class="gif-controls">
+                                    <button class="btn btn-sm btn-outline-light" onclick="toggleGif('ndviGif')">
+                                        <i class="bi bi-play-pause"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="legend mt-3">
+                                <div class="legend-title">Légende NDVI</div>
+                                <div class="legend-bar ndvi-gradient"></div>
+                                <div class="legend-labels">
+                                    <span>Eau (-0.2)</span>
+                                    <span>Sol nu (0.0)</span>
+                                    <span>Végétation modérée (0.5)</span>
+                                    <span>Végétation dense (1.0)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NDWI Animation -->
+                <div class="col-lg-6 mb-5">
+                    <div class="visualization-card">
+                        <div class="card-header">
+                            <div class="d-flex align-items-center">
+                                <div class="header-icon ndwi-color me-3">
+                                    <i class="bi bi-droplet-fill"></i>
+                                </div>
+                                <div>
+                                    <h4 class="mb-0">Indice d'Eau (NDWI)</h4>
+                                    <small class="text-muted">Évolution des ressources hydriques</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="gif-container">
+                                <svg id="ndwi-svg" class="mask-svg" width="100%" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
+                                <img id="ndwiGif" src="{{ ndwi_gif }}?t={{ timestamp }}" alt="Animation NDWI" class="masked-gif">
+                                <div class="gif-controls">
+                                    <button class="btn btn-sm btn-outline-light" onclick="toggleGif('ndwiGif')">
+                                        <i class="bi bi-play-pause"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="legend mt-3">
+                                <div class="legend-title">Légende NDWI</div>
+                                <div class="legend-bar ndwi-gradient"></div>
+                                <div class="legend-labels">
+                                    <span>Très sec (-1.0)</span>
+                                    <span>Humidité modérée (0.0)</span>
+                                    <span>Eau libre (1.0)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Interprétation -->
+    <section class="interpretation-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="section-title">Interprétation des Résultats</h2>
+                    <p class="text-muted">Analyse automatique des tendances observées</p>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="interpretation-card">
+                        <h4><i class="bi bi-graph-up-arrow text-success me-2"></i>Tendances NDVI</h4>
+                        <p class="interpretation-text" id="ndviInterpretation">
+                            {% if ndvi_mean %}
+                                {% if ndvi_mean > 0.6 %}
+                                    La végétation est dense et en bonne santé sur cette zone.
+                                {% elif ndvi_mean > 0.4 %}
+                                    Végétation modérée, potentiel de développement agricole.
+                                {% elif ndvi_mean > 0.2 %}
+                                    Végétation clairsemée, surveillance recommandée.
+                                {% else %}
+                                    Zone principalement constituée de sol nu ou d'eau.
+                                {% endif %}
+                            {% else %}
+                                L'analyse des tendances NDVI sera disponible après traitement.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 mb-4">
+                    <div class="interpretation-card">
+                        <h4><i class="bi bi-droplet text-primary me-2"></i>Tendances NDWI</h4>
+                        <p class="interpretation-text" id="ndwiInterpretation">
+                            {% if ndwi_mean %}
+                                {% if ndwi_mean > 0.3 %}
+                                    Présence significative d'eau ou forte humidité du sol.
+                                {% elif ndwi_mean > 0 %}
+                                    Humidité modérée, conditions favorables.
+                                {% else %}
+                                    Zone relativement sèche, surveillance hydrique recommandée.
+                                {% endif %}
+                            {% else %}
+                                L'analyse des tendances NDWI sera disponible après traitement.
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Actions -->
+    <section class="actions-section py-5 bg-light">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h3 class="mb-4">Actions Disponibles</h3>
+                    <div class="action-buttons">
+                        <a href="/" class="btn btn-outline-primary btn-lg me-3 mb-3">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Nouvelle Analyse
+                        </a>
+                        <button class="btn btn-success btn-lg me-3 mb-3" onclick="exportData()">
+                            <i class="bi bi-download me-2"></i>
+                            Télécharger les Données
+                        </button>
+                        <button class="btn btn-info btn-lg mb-3" onclick="shareResults()">
+                            <i class="bi bi-share me-2"></i>
+                            Partager les Résultats
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <i class="bi bi-satellite me-2"></i>
+                        <strong>Earth Monitor</strong>
+                    </div>
+                    <p class="text-muted mb-0">Rapport généré le {{ generation_date }}</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-credits">
+                        <small class="text-muted">
+                            Données: <strong>Sentinel-2 ESA</strong> • 
+                            Résolution: <strong>30m</strong> • 
+                            Période: <strong>Jan-Mar 2025</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/results.js') }}"></script>
+</body>
+</html>

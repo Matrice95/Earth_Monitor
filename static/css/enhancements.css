@@ -1,0 +1,226 @@
+/* Micro-interactions et animations avancées */
+
+/* Smooth scroll pour toute la page */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Animation de parallax pour le hero */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:%2344B499;stop-opacity:0.1" /><stop offset="100%" style="stop-color:%234A90E2;stop-opacity:0.1" /></linearGradient></defs><circle cx="200" cy="200" r="150" fill="url(%23grad)"/><circle cx="800" cy="300" r="100" fill="url(%23grad)"/><circle cx="600" cy="700" r="120" fill="url(%23grad)"/></svg>') no-repeat center center;
+    background-size: cover;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 1;
+}
+
+/* Animation pour les icônes de la section "Comment ça marche" */
+.bi {
+    transition: all 0.3s ease;
+}
+
+.bi:hover {
+    transform: scale(1.1);
+}
+
+/* Effet de typing pour le titre hero */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: white; }
+}
+
+.hero-title {
+    overflow: hidden;
+    border-right: .15em solid white;
+    white-space: nowrap;
+    margin: 0 auto;
+    letter-spacing: .15em;
+    animation: 
+        typing 3.5s steps(40, end),
+        blink-caret .75s step-end infinite;
+}
+
+/* Animations pour les cartes */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card {
+    animation: cardFadeIn 0.6s ease-out;
+}
+
+/* Gradient animé pour les boutons */
+.btn-primary {
+    background-size: 200% 200%;
+    background-image: linear-gradient(45deg, var(--primary-green) 0%, var(--water-blue) 50%, var(--primary-green) 100%);
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Animation de pulsation pour les indicateurs de chargement */
+@keyframes pulse-glow {
+    0% {
+        box-shadow: 0 0 5px var(--primary-green);
+    }
+    50% {
+        box-shadow: 0 0 20px var(--primary-green), 0 0 30px var(--primary-green);
+    }
+    100% {
+        box-shadow: 0 0 5px var(--primary-green);
+    }
+}
+
+.loading {
+    animation: pulse-glow 2s infinite;
+}
+
+/* Amélioration des tooltips */
+[data-bs-toggle="tooltip"] {
+    position: relative;
+    cursor: help;
+}
+
+/* Animation pour les KPI cards */
+.kpi-card {
+    transform: scale(0.95);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kpi-card.show {
+    transform: scale(1);
+}
+
+.kpi-value {
+    transition: all 0.3s ease;
+}
+
+/* Effet de particules pour le background */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.2), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    animation: sparkle 4s linear infinite;
+    z-index: 0;
+}
+
+@keyframes sparkle {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-100px); }
+}
+
+/* Responsive enhancements */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 1.8rem;
+        animation: none; /* Désactiver l'animation typing sur mobile */
+        border-right: none;
+    }
+    
+    .hero-section::after {
+        display: none; /* Désactiver les particules sur mobile pour performance */
+    }
+    
+    .kpi-card {
+        margin-bottom: 1rem;
+    }
+    
+    .gif-container {
+        height: 250px;
+    }
+}
+
+/* Dark mode support (optionnel) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --off-white: #1a1a1a;
+        --earth-gray: #e0e0e0;
+        --dark-green: #66d9b3;
+    }
+    
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        color: var(--earth-gray);
+    }
+    
+    .card {
+        background-color: #2d2d2d;
+        color: var(--earth-gray);
+    }
+}
+
+/* Accessibility improvements */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .hero-title {
+        animation: none;
+        border-right: none;
+    }
+}
+
+/* Focus improvements for keyboard navigation */
+.btn:focus,
+.form-select:focus {
+    outline: 2px solid var(--primary-green);
+    outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+    .hero-section,
+    .btn,
+    footer {
+        display: none !important;
+    }
+    
+    .card {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

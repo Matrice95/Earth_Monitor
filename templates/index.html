@@ -3,29 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualisation d'Indices Environnementaux</title>
+    <title>Earth Monitor - Surveillance Environnementale par Satellite</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/enhancements.css') }}">
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12 text-center mb-4">
-                <h1>Analyse d'Images Satellitaires par Localité</h1>
-                <p class="lead">Visualisez l'évolution des indices NDVI (végétation) et NDWI (eau) pour une localité en Côte d'Ivoire</p>
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="hero-title">🛰️ Earth Monitor</h1>
+                    <p class="hero-subtitle">Surveillance de la végétation et des ressources en eau par satellite</p>
+                    <p class="lead">Analysez les indices NDVI et NDWI de n'importe quelle localité en Côte d'Ivoire avec des données Sentinel-2 en temps réel</p>
+                </div>
             </div>
         </div>
+    </div>
 
+    <!-- Comment ça marche Section -->
+    <div class="container mb-5">
+        <div class="row text-center mb-4">
+            <div class="col-12">
+                <h2 class="mb-4">Comment ça marche</h2>
+            </div>
+        </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="bi bi-geo-alt-fill text-primary" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Sélectionnez</h4>
+                    <p class="text-muted">Choisissez votre zone d'étude parmi les localités de Côte d'Ivoire</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="bi bi-satellite text-water" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Traitement</h4>
+                    <p class="text-muted">Analyse automatique via Google Earth Engine et Sentinel-2</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="text-center">
+                    <i class="bi bi-bar-chart-line text-primary" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">Visualisez</h4>
+                    <p class="text-muted">Obtenez des animations temporelles et des analyses détaillées</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- À propos des indices Section -->
+    <div class="container mb-5">
+        <div class="row text-center mb-4">
+            <div class="col-12">
+                <h2 class="mb-4">À propos des indices</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header ndvi-header">
+                        <i class="bi bi-tree-fill me-2"></i>
+                        NDVI - Indice de Végétation
+                    </div>
+                    <div class="card-body">
+                        <p>Le <strong>Normalized Difference Vegetation Index</strong> mesure la densité et la santé de la végétation.</p>
+                        <div class="alert alert-success" role="alert">
+                            <strong>Formule:</strong> NDVI = (NIR - Red) / (NIR + Red)
+                        </div>
+                        <ul class="list-unstyled">
+                            <li>🟤 < 0.2: Sol nu, eau</li>
+                            <li>🟡 0.2-0.4: Végétation clairsemée</li>
+                            <li>🟢 0.4-0.6: Végétation modérée</li>
+                            <li>🌿 > 0.6: Végétation dense</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header ndwi-header">
+                        <i class="bi bi-droplet-fill me-2"></i>
+                        NDWI - Indice d'Eau
+                    </div>
+                    <div class="card-body">
+                        <p>Le <strong>Normalized Difference Water Index</strong> détecte les surfaces en eau et l'humidité.</p>
+                        <div class="alert alert-info" role="alert">
+                            <strong>Formule:</strong> NDWI = (Green - NIR) / (Green + NIR)
+                        </div>
+                        <ul class="list-unstyled">
+                            <li>⚪ < 0: Surfaces sèches</li>
+                            <li>🔵 0-0.2: Humidité faible</li>
+                            <li>💧 0.2-0.4: Humidité modérée</li>
+                            <li>🌊 > 0.4: Eau libre</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interface principale -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        Sélection de la localité
+                        <i class="bi bi-gear-fill me-2"></i>
+                        Configuration de l'analyse
                     </div>
                     <div class="card-body">
                         <form id="localityForm">
                             <div class="mb-3">
-                                <label for="localitySelect" class="form-label">Choisissez une localité</label>
+                                <label for="localitySelect" class="form-label">
+                                    <i class="bi bi-geo-alt me-1"></i>
+                                    Choisissez une localité
+                                </label>
                                 <select class="form-select" id="localitySelect" name="locality" required>
                                     <option value="" selected disabled>Sélectionnez une localité</option>
                                     {% for locality in localities %}
@@ -33,50 +132,116 @@
                                     {% endfor %}
                                 </select>
                             </div>
-                            <button type="submit" class="btn btn-primary" id="processButton">
-                                Lancer le traitement
+                            <button type="submit" class="btn btn-primary w-100" id="processButton">
+                                <i class="bi bi-play-circle me-2"></i>
+                                Lancer l'analyse
                             </button>
                         </form>
                     </div>
                 </div>
 
+                <!-- KPI Cards -->
+                <div class="row mt-3" id="kpiCards" style="display: none;">
+                    <div class="col-12 mb-3">
+                        <div class="kpi-card">
+                            <div class="kpi-value" id="ndviValue">--</div>
+                            <div class="kpi-label">NDVI Moyen</div>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="kpi-card ndwi">
+                            <div class="kpi-value" id="ndwiValue">--</div>
+                            <div class="kpi-label">NDWI Moyen</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card mt-3">
                     <div class="card-header">
+                        <i class="bi bi-activity me-2"></i>
                         Statut du traitement
                     </div>
                     <div class="card-body">
                         <div id="statusMessages">
-                            <p class="text-muted">Aucun traitement en cours</p>
+                            <div class="text-muted text-center">
+                                <i class="bi bi-info-circle me-2"></i>
+                                Aucun traitement en cours
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-8">
+            <div class="col-lg-8">
                 <div class="card">
                     <div class="card-header">
-                        Résultats de l'analyse
+                        <i class="bi bi-graph-up me-2"></i>
+                        Résultats de l'analyse temporelle
                     </div>
                     <div class="card-body">
                         <div id="results">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <h5 class="text-center">Indice de Végétation (NDVI)</h5>
+                                    <h5 class="text-center mb-3">
+                                        <i class="bi bi-tree text-primary me-2"></i>
+                                        Évolution NDVI (Végétation)
+                                    </h5>
                                     <div class="text-center position-relative">
                                         <div class="gif-container">
                                             <svg id="ndvi-svg" class="mask-svg" width="100%" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
-                                            <img id="ndviGif" src="" alt="NDVI Animation" class="masked-gif img-fluid d-none">
-                                            <p id="ndviPlaceholder" class="text-muted">L'animation NDVI s'affichera ici</p>
+                                            <img id="ndviGif" src="" alt="Animation NDVI" class="masked-gif img-fluid d-none">
+                                            <div id="ndviPlaceholder" class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                                <div class="text-center">
+                                                    <i class="bi bi-image" style="font-size: 3rem; opacity: 0.3;"></i>
+                                                    <p class="mt-2">L'animation NDVI s'affichera ici</p>
+                                                    <small class="text-muted">Sélectionnez une localité pour commencer</small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <h5 class="text-center">Indice d'Eau (NDWI)</h5>
+                                    <h5 class="text-center mb-3">
+                                        <i class="bi bi-droplet text-water me-2"></i>
+                                        Évolution NDWI (Eau)
+                                    </h5>
                                     <div class="text-center position-relative">
                                         <div class="gif-container">
                                             <svg id="ndwi-svg" class="mask-svg" width="100%" height="400" xmlns="http://www.w3.org/2000/svg"></svg>
-                                            <img id="ndwiGif" src="" alt="NDWI Animation" class="masked-gif img-fluid d-none">
-                                            <p id="ndwiPlaceholder" class="text-muted">L'animation NDWI s'affichera ici</p>
+                                            <img id="ndwiGif" src="" alt="Animation NDWI" class="masked-gif img-fluid d-none">
+                                            <div id="ndwiPlaceholder" class="d-flex align-items-center justify-content-center h-100 text-muted">
+                                                <div class="text-center">
+                                                    <i class="bi bi-image" style="font-size: 3rem; opacity: 0.3;"></i>
+                                                    <p class="mt-2">L'animation NDWI s'affichera ici</p>
+                                                    <small class="text-muted">Sélectionnez une localité pour commencer</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Légendes -->
+                            <div class="row mt-4" id="legendSection" style="display: none;">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-palette me-2"></i>Légende NDVI</h6>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span style="background: linear-gradient(to right, #8C543E, #79E1B8); height: 20px; width: 100px; border-radius: 10px;"></span>
+                                                <small class="ms-2">Sol nu → Végétation dense</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6><i class="bi bi-palette me-2"></i>Légende NDWI</h6>
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                <span style="background: linear-gradient(to right, #D5C2B8, #1E5F8C); height: 20px; width: 100px; border-radius: 10px;"></span>
+                                                <small class="ms-2">Sec → Eau libre</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -87,6 +252,26 @@
             </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-4" style="background-color: var(--dark-green); color: white;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Earth Monitor</h5>
+                    <p class="mb-0">Surveillance environnementale par satellite</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">
+                        <small>
+                            Données: <strong>Sentinel-2</strong> via <strong>Google Earth Engine</strong><br>
+                            <i class="bi bi-calendar3 me-1"></i>Période: Janvier - Mars 2025
+                        </small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>

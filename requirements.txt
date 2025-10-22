@@ -1,0 +1,7 @@
+Flask==2.3.3
+earthengine-api==0.1.374
+requests==2.31.0
+Pillow==10.0.1
+imageio==2.31.5
+numpy==1.24.3
+python-dotenv==1.0.0

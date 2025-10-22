@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth Monitor - Surveillance Environnementale</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="bi bi-satellite me-2"></i>
+                <strong>Earth Monitor</strong>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#indices">Indices</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analysis">Analyse</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section avec image de fond -->
+    <section class="hero-section" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-background"></div>
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-lg-8 mx-auto text-center text-white">
+                    <h1 class="display-3 fw-bold mb-4 hero-title">
+                        Surveillance Environnementale
+                        <span class="text-primary d-block">par Satellite</span>
+                    </h1>
+                    <p class="lead mb-5 hero-subtitle">
+                        Analysez l'évolution de la végétation et des ressources en eau en Côte d'Ivoire 
+                        grâce aux technologies de télédétection avancées
+                    </p>
+                    <div class="hero-stats mb-5">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="stat-number">{{ localities|length }}</h3>
+                                    <p class="stat-label">Localités disponibles</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="stat-number">30m</h3>
+                                    <p class="stat-label">Résolution spatiale</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item">
+                                    <h3 class="stat-number">2025</h3>
+                                    <p class="stat-label">Données récentes</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#analysis" class="btn btn-primary btn-lg btn-cta">
+                        <i class="bi bi-rocket-takeoff me-2"></i>
+                        Commencer l'analyse
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="bi bi-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Section À propos -->
+    <section class="about-section py-5" id="about">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 class="section-title mb-4">
+                        <span class="text-primary">Earth Monitor</span> utilise les données satellitaires 
+                        pour surveiller l'environnement
+                    </h2>
+                    <p class="text-muted mb-4">
+                        Notre plateforme exploite les images Sentinel-2 de l'ESA via Google Earth Engine 
+                        pour calculer les indices de végétation (NDVI) et d'eau (NDWI) en temps quasi-réel.
+                    </p>
+                    <div class="feature-list">
+                        <div class="feature-item mb-3">
+                            <i class="bi bi-check-circle-fill text-primary me-3"></i>
+                            <span>Images satellitaires haute résolution (10-30m)</span>
+                        </div>
+                        <div class="feature-item mb-3">
+                            <i class="bi bi-check-circle-fill text-primary me-3"></i>
+                            <span>Traitement automatisé via Google Earth Engine</span>
+                        </div>
+                        <div class="feature-item mb-3">
+                            <i class="bi bi-check-circle-fill text-primary me-3"></i>
+                            <span>Visualisation temporelle animée</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="satellite-illustration">
+                        <i class="bi bi-globe text-primary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Indices -->
+    <section class="indices-section py-5 bg-light" id="indices">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Indices Environnementaux</h2>
+                <p class="text-muted">Comprenez les métriques utilisées pour l'analyse</p>
+            </div>
+            <div class="row">
+                <div class="col-lg-6 mb-4">
+                    <div class="indice-card ndvi-card">
+                        <div class="card-icon">
+                            <i class="bi bi-tree-fill"></i>
+                        </div>
+                        <h3>NDVI - Indice de Végétation</h3>
+                        <p>Le Normalized Difference Vegetation Index mesure la densité et la santé de la végétation.</p>
+                        <div class="formula">
+                            <strong>NDVI = (NIR - Rouge) / (NIR + Rouge)</strong>
+                        </div>
+                        <div class="scale">
+                            <div class="scale-bar ndvi-scale"></div>
+                            <div class="scale-labels">
+                                <span>Sol nu (0.0)</span>
+                                <span>Végétation dense (1.0)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mb-4">
+                    <div class="indice-card ndwi-card">
+                        <div class="card-icon">
+                            <i class="bi bi-droplet-fill"></i>
+                        </div>
+                        <h3>NDWI - Indice d'Eau</h3>
+                        <p>Le Normalized Difference Water Index détecte les surfaces en eau et l'humidité du sol.</p>
+                        <div class="formula">
+                            <strong>NDWI = (Vert - NIR) / (Vert + NIR)</strong>
+                        </div>
+                        <div class="scale">
+                            <div class="scale-bar ndwi-scale"></div>
+                            <div class="scale-labels">
+                                <span>Sec (-1.0)</span>
+                                <span>Eau libre (1.0)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Sélection de localité -->
+    <section class="analysis-section py-5" id="analysis">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-title mb-4">Sélectionnez votre zone d'étude</h2>
+                    <p class="text-muted mb-5">
+                        Choisissez une localité en Côte d'Ivoire pour démarrer l'analyse environnementale
+                    </p>
+                    
+                    <div class="locality-selector">
+                        <form id="localityForm" class="mb-4">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                </span>
+                                <select class="form-select" id="localitySelect" name="locality" required>
+                                    <option value="" selected disabled>Sélectionnez une localité</option>
+                                    {% for locality in localities %}
+                                    <option value="{{ locality }}">{{ locality }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-primary" id="processButton">
+                                    <i class="bi bi-search me-2"></i>
+                                    Analyser
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div id="statusMessages" class="status-container">
+                            <!-- Messages de statut apparaîtront ici -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer py-4">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="footer-brand">
+                        <i class="bi bi-satellite me-2"></i>
+                        <strong>Earth Monitor</strong>
+                    </div>
+                    <p class="text-muted mb-0">Surveillance environnementale par satellite</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="footer-credits">
+                        <small class="text-muted">
+                            Données: <strong>Sentinel-2 ESA</strong> • 
+                            Traitement: <strong>Google Earth Engine</strong> • 
+                            Période: <strong>2025</strong>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/landing.js') }}"></script>
+</body>
+</html>

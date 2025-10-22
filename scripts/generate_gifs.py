@@ -108,19 +108,57 @@ def process_locality(locality_name):
         
         return ee.ImageCollection(composites)
     
-    # Génération GIF spatial
-    def create_spatial_gif(collection, index_name, threshold, color):
+    # Génération GIF spatial avec palettes réalistes
+    def create_spatial_gif(collection, index_name, threshold, palette_colors):
         try:
             collection = collection.sort('month')
             images = []
-            vis_params = {
-                'min': 0,
-                'max': 1,
-                'palette': ['000000', color[1:]],
-                'region': roi,
-                'dimensions': 1024,
-                'format': 'png'
-            }
+            
+            # Palettes de couleurs réalistes selon l'indice
+            if index_name == 'NDVI':
+                # Palette NDVI : sol nu (brun) -> végétation dense (vert vif)
+                # Étendre la plage pour inclure les valeurs négatives (eau, ombre)
+                vis_params = {
+                    'min': -0.2,  # Inclure les valeurs négatives (eau, ombre)
+                    'max': 1.0,   # Maximum théorique du NDVI
+                    'palette': [
+                        '000080',  # Bleu foncé pour eau/ombre (-0.2 à -0.1)
+                        '4169E1',  # Bleu royal pour eau (-0.1 à 0.0)
+                        '8C543E',  # Brun foncé - sol nu (0.0)
+                        'A0703B',  # Brun moyen (0.1)
+                        'B8860B',  # Brun jaune (0.2)
+                        'DAA520',  # Or terne (0.3)
+                        'ADFF2F',  # Vert jaune (0.4)
+                        '9ACD32',  # Vert olive (0.5)
+                        '7CFC00',  # Vert prairie (0.6)
+                        '32CD32',  # Vert citron (0.7)
+                        '228B22',  # Vert forêt (0.8)
+                        '79E1B8'   # Vert vif - végétation dense (1.0)
+                    ],
+                    'region': roi,
+                    'dimensions': 1024,
+                    'format': 'png'
+                }
+            else:  # NDWI
+                # Palette NDWI : sec (beige) -> eau libre (bleu profond)
+                vis_params = {
+                    'min': -1,
+                    'max': 1,
+                    'palette': [
+                        'D5C2B8',  # Beige - très sec (-1.0)
+                        'C4B5A8',  # Beige gris (-0.6)
+                        'B3A898',  # Gris beige (-0.2)
+                        'A29B88',  # Gris (0.0)
+                        '8BB8E8',  # Bleu clair (0.2)
+                        '6FA8DC',  # Bleu moyen (0.4)
+                        '5398D0',  # Bleu (0.6)
+                        '3788C4',  # Bleu foncé (0.8)
+                        '1E5F8C'   # Bleu profond - eau libre (1.0)
+                    ],
+                    'region': roi,
+                    'dimensions': 1024,
+                    'format': 'png'
+                }
             
             for i in range(collection.size().getInfo()):
                 img = ee.Image(collection.toList(collection.size()).get(i))
@@ -137,9 +175,10 @@ def process_locality(locality_name):
                     logging.error(f"Bande manquante dans l'image {i+1}: {band_name}")
                     continue
                     
-                # Traitement de l'image
-                masked = img.select([index_name]).gte(threshold).selfMask()
-                url = masked.getThumbURL(vis_params)
+                # Traitement de l'image - Afficher toutes les valeurs sans masquage
+                # On prend toutes les valeurs de l'indice sans filtrage par seuil
+                index_image = img.select([index_name])
+                url = index_image.getThumbURL(vis_params)
                 
                 # Téléchargement
                 try:
@@ -174,11 +213,11 @@ def process_locality(locality_name):
     try:
         logging.info("Début traitement NDVI...")
         ndvi_monthly = create_monthly_composites(sentinel2.select('NDVI'), 'NDVI')
-        ndvi_path = create_spatial_gif(ndvi_monthly, 'NDVI', NDVI_THRESHOLD, '#00FF00')
+        ndvi_path = create_spatial_gif(ndvi_monthly, 'NDVI', NDVI_THRESHOLD, 'ndvi_palette')
         
         logging.info("Début traitement NDWI...")
         ndwi_monthly = create_monthly_composites(sentinel2.select('NDWI'), 'NDWI')
-        ndwi_path = create_spatial_gif(ndwi_monthly, 'NDWI', NDWI_THRESHOLD, '#0000FF')
+        ndwi_path = create_spatial_gif(ndwi_monthly, 'NDWI', NDWI_THRESHOLD, 'ndwi_palette')
         
         return OUTPUT_DIR
     except Exception as e:

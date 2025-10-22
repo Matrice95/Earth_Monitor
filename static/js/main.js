@@ -8,6 +8,65 @@ document.addEventListener('DOMContentLoaded', function() {
     const ndwiPlaceholder = document.getElementById('ndwiPlaceholder');
     const ndviSvg = document.getElementById('ndvi-svg');
     const ndwiSvg = document.getElementById('ndwi-svg');
+    const kpiCards = document.getElementById('kpiCards');
+    const legendSection = document.getElementById('legendSection');
+    const ndviValue = document.getElementById('ndviValue');
+    const ndwiValue = document.getElementById('ndwiValue');
+    
+    // Animation d'entrée pour les éléments
+    function animateIn(element) {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        element.style.transition = 'all 0.6s ease';
+        
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, 100);
+    }
+    
+    // Fonction pour calculer des valeurs NDVI/NDWI simulées (en attendant les vraies données)
+    function calculateMockValues(localityName) {
+        // Simulation basée sur le nom pour cohérence
+        const hash = localityName.split('').reduce((a, b) => {
+            a = ((a << 5) - a) + b.charCodeAt(0);
+            return a & a;
+        }, 0);
+        
+        const ndvi = Math.abs(hash % 100) / 100 * 0.6 + 0.2; // Entre 0.2 et 0.8
+        const ndwi = (Math.abs(hash % 80) - 40) / 100; // Entre -0.4 et 0.4
+        
+        return { ndvi: ndvi.toFixed(3), ndwi: ndwi.toFixed(3) };
+    }
+    
+    // Fonction pour mettre à jour les KPI
+    function updateKPI(locality) {
+        const values = calculateMockValues(locality);
+        
+        // Animation des valeurs
+        const animateValue = (element, finalValue, suffix = '') => {
+            let startValue = 0;
+            const duration = 1000;
+            const increment = finalValue / (duration / 16);
+            
+            const counter = setInterval(() => {
+                startValue += increment;
+                if (startValue >= finalValue) {
+                    clearInterval(counter);
+                    startValue = finalValue;
+                }
+                element.textContent = startValue.toFixed(3) + suffix;
+            }, 16);
+        };
+        
+        kpiCards.style.display = 'block';
+        animateIn(kpiCards);
+        
+        setTimeout(() => {
+            animateValue(ndviValue, parseFloat(values.ndvi));
+            animateValue(ndwiValue, parseFloat(values.ndwi));
+        }, 300);
+    }
     
     // Fonction pour obtenir la boîte englobante des coordonnées
     function getBoundingBox(coordinates) {
@@ -122,17 +181,42 @@ document.addEventListener('DOMContentLoaded', function() {
         svgElement.appendChild(legend);
     }
     
-    // Fonction pour ajouter un message de statut
+    // Fonction pour ajouter un message de statut avec icônes
     function addStatusMessage(message, type = 'info') {
         const messageElement = document.createElement('div');
         messageElement.classList.add('status-item', `status-${type}`);
         
         const timestamp = new Date().toLocaleTimeString();
-        messageElement.innerHTML = `<small>${timestamp}</small> - ${message}`;
+        let icon = '';
+        
+        switch(type) {
+            case 'info':
+                icon = '<i class="bi bi-info-circle me-2"></i>';
+                break;
+            case 'success':
+                icon = '<i class="bi bi-check-circle me-2"></i>';
+                break;
+            case 'error':
+                icon = '<i class="bi bi-exclamation-triangle me-2"></i>';
+                break;
+        }
+        
+        messageElement.innerHTML = `
+            <div class="d-flex align-items-center">
+                ${icon}
+                <div>
+                    <small class="opacity-75">${timestamp}</small>
+                    <div>${message}</div>
+                </div>
+            </div>
+        `;
         
         statusMessages.innerHTML = ''; // Effacer les messages précédents
         statusMessages.appendChild(messageElement);
         statusMessages.scrollTop = statusMessages.scrollHeight;
+        
+        // Animation d'entrée
+        animateIn(messageElement);
     }
     
     // Gestionnaire de soumission du formulaire
@@ -145,17 +229,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Désactiver le bouton pendant le traitement
+        // Désactiver le bouton pendant le traitement avec animation
         processButton.disabled = true;
-        processButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Traitement en cours...';
+        processButton.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            <i class="bi bi-satellite me-1"></i>
+            Analyse en cours...
+        `;
         
-        // Réinitialiser les images
-        ndviGif.classList.add('d-none');
-        ndwiGif.classList.add('d-none');
-        ndviPlaceholder.classList.remove('d-none');
-        ndwiPlaceholder.classList.remove('d-none');
-        ndviPlaceholder.classList.add('loading');
-        ndwiPlaceholder.classList.add('loading');
+        // Réinitialiser les images avec transition fluide
+        [ndviGif, ndwiGif].forEach(img => {
+            img.style.transition = 'opacity 0.3s ease';
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.classList.add('d-none');
+                img.style.opacity = '1';
+            }, 300);
+        });
+        
+        [ndviPlaceholder, ndwiPlaceholder].forEach(placeholder => {
+            placeholder.classList.remove('d-none');
+            placeholder.classList.add('loading');
+            placeholder.innerHTML = `
+                <div class="text-center">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p>Traitement des images satellitaires...</p>
+                    <small class="text-muted">Cela peut prendre quelques minutes</small>
+                </div>
+            `;
+        });
         
         // Mettre à jour le statut
         addStatusMessage(`Récupération des données de ${locality}...`);
@@ -191,39 +295,67 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
-            // Traitement réussi
-            addStatusMessage(`Traitement terminé pour ${data.locality}`, 'success');
+            // Traitement réussi avec animations
+            addStatusMessage(`✨ Analyse terminée pour <strong>${data.locality}</strong>`, 'success');
+            
+            // Mettre à jour les KPI
+            updateKPI(data.locality);
             
             // Désactiver l'animation de chargement
-            ndviPlaceholder.classList.remove('loading');
-            ndwiPlaceholder.classList.remove('loading');
+            [ndviPlaceholder, ndwiPlaceholder].forEach(placeholder => {
+                placeholder.classList.remove('loading');
+            });
             
             // Charger les GIFs avec un paramètre pour éviter la mise en cache
-            ndviGif.src = data.ndvi_gif + '?t=' + new Date().getTime();
-            ndwiGif.src = data.ndwi_gif + '?t=' + new Date().getTime();
+            const timestamp = new Date().getTime();
+            ndviGif.src = data.ndvi_gif + '?t=' + timestamp;
+            ndwiGif.src = data.ndwi_gif + '?t=' + timestamp;
             
             // Appliquer les masques quand les images sont chargées
             ndviGif.onload = function() {
-                ndviGif.classList.remove('d-none');
                 ndviPlaceholder.classList.add('d-none');
+                ndviGif.classList.remove('d-none');
+                ndviGif.style.opacity = '0';
+                ndviGif.style.transition = 'opacity 0.6s ease';
+                setTimeout(() => { ndviGif.style.opacity = '1'; }, 100);
+                
                 displayLocalityContour(window.currentLocalityGeoJson, ndviSvg, ndviGif);
+                
+                // Afficher les légendes
+                legendSection.style.display = 'block';
+                animateIn(legendSection);
             };
             
             ndwiGif.onload = function() {
-                ndwiGif.classList.remove('d-none');
                 ndwiPlaceholder.classList.add('d-none');
+                ndwiGif.classList.remove('d-none');
+                ndwiGif.style.opacity = '0';
+                ndwiGif.style.transition = 'opacity 0.6s ease';
+                setTimeout(() => { ndwiGif.style.opacity = '1'; }, 100);
+                
                 displayLocalityContour(window.currentLocalityGeoJson, ndwiSvg, ndwiGif);
             };
         })
         .catch(error => {
-            addStatusMessage(`Erreur: ${error.message}`, 'error');
-            ndviPlaceholder.classList.remove('loading');
-            ndwiPlaceholder.classList.remove('loading');
+            addStatusMessage(`❌ Erreur: ${error.message}`, 'error');
+            [ndviPlaceholder, ndwiPlaceholder].forEach(placeholder => {
+                placeholder.classList.remove('loading');
+                placeholder.innerHTML = `
+                    <div class="text-center text-danger">
+                        <i class="bi bi-exclamation-triangle" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="mt-2">Erreur lors du traitement</p>
+                        <small class="text-muted">Veuillez réessayer</small>
+                    </div>
+                `;
+            });
         })
         .finally(() => {
-            // Réactiver le bouton
+            // Réactiver le bouton avec animation
             processButton.disabled = false;
-            processButton.innerHTML = 'Lancer le traitement';
+            processButton.innerHTML = `
+                <i class="bi bi-play-circle me-2"></i>
+                Lancer l'analyse
+            `;
         });
     });
 });
